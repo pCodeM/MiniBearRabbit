@@ -7,7 +7,7 @@ enum API {
 //获取一级分类数据
 export const reqC1 = ()=>{
     return request.get<any,any>(API.C1_URL)
-}
+};
 //获取二级分类数据
 export const reqC2 = (c1id) => {
   return request.get(API.C2_URL + c1id);
