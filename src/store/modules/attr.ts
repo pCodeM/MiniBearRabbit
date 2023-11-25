@@ -3,13 +3,13 @@ import { reqC1, reqC2, reqC3 } from "@/api/products/attr/index";
 const UseAttrStore = defineStore("AttrStore", {
   state: () => {
     return {
-      C1Data: [],
+      C1Data: <any>[],
       c1id: "",
 
-      C2Data: [],
+      C2Data: <any>[],
       c2id: "",
 
-      C3Data: [],
+      C3Data: <any>[],
       c3id: "",
     };
   },
