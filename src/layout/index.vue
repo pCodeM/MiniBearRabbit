@@ -4,7 +4,7 @@
         <div class="layout_slider" :class="settingStore.isFold ? 'Fold' : ''">
             <Logo></Logo>
             <el-scrollbar class="scrollbar">
-                <el-menu :collapse="settingStore.isFold" :default-active="$route.path" background-color="#001529" text-color="#fff">
+                <el-menu :collapse="settingStore.isFold" :default-active="$route.path" background-color="$base-menu-bac" active-text-color="#f3d19e" text-color="$base-menu-text-color">
                     <Menu :menuList="constantRoutes"></Menu>
                 </el-menu>
             </el-scrollbar>

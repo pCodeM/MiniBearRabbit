@@ -14,7 +14,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button class="login_btn" type="primary" loading-icon="Loading" :loading="isLoad"
-                            @click="BtnLogin">登录</el-button>
+                            @keyup.enter="BtnLoginEnter" @click="BtnLogin">登录</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -26,12 +26,15 @@ import { reactive, ref } from 'vue';
 import router from "@/router";
 import useUserStore from "@/store/modules/user.ts";
 import { ElNotification } from "element-plus/es/components/index.mjs";
+import { onMounted } from 'vue';
 
 let loginDatas = ref()
 let userStore = useUserStore()
 let loginForm: any = reactive({ username: 'admin', password: 'atguigu123' })
 let isLoad = ref(false)
-
+onMounted(() => {
+    
+})
 const BtnLogin = async () => {
     await loginDatas.value.validate()
     isLoad.value = true
@@ -49,6 +52,10 @@ const BtnLogin = async () => {
             message: (error as Error).message
         })
     }
+}
+const BtnLoginEnter = () => {
+    console.log(123);
+    BtnLogin()
 }
 const rules = {
     username: [

@@ -1,6 +1,6 @@
 <template>
   <div class="tradmark_top">
-    <el-autocomplete class="search" fetch-suggestions="" popper-class="my-autocomplete" placeholder="请输入关键字" @select="">
+    <el-autocomplete class="search" popper-class="my-autocomplete" placeholder="请输入关键字" @select="">
       <template #suffix>
         <el-icon class="el-input__icon" @click="">
           <search />
@@ -43,12 +43,12 @@
     @current-change="changePage" />
   <!-- 添加窗口 -->
   <el-dialog v-model="dialogFormVisible" title="商品添加">
-    <el-form model="productForm">
-      <el-form-item label="品牌名称" :label-width="formLabelWidth">
+    <el-form :model="productForm" :rules="rules" ref="formRef">
+      <el-form-item prop="tmName" label="品牌名称" :label-width="formLabelWidth">
         <el-input v-model="productForm.tmName" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="品牌LOGO" :label-width="formLabelWidth">
-        <el-upload class="avatar-uploader" action="http://sph-api.atguigu.cn/admin/product/fileUpload" :headers="headers"
+      <el-form-item label="品牌LOGO" prop="logoUrl">
+        <el-upload class="avatar-uploader" :validate="isUploadRule" action="http://sph-api.atguigu.cn/admin/product/fileUpload" :headers="headers"
           :show-file-list="false" :before-upload="beforeAvatarUpload" :on-success="handleAvatarSuccess">
           <img v-if="productForm.logoUrl" :src="productForm.logoUrl" class="avatar" />
           <el-icon v-else class="avatar-uploader-icon">
@@ -90,6 +90,31 @@ let productForm = reactive({
   logoUrl: '',
 })
 
+
+//表单校验
+const tmNameRule = (rule: any, value, callback) => {
+  if (value.trim().length > 2){
+    callback()
+  }else{
+    callback(new Error('标签名称不能少于 2 个字!'))
+  }
+}
+const isUploadRule = (rule, value, callback) => {
+    if(value){
+      callback()
+    }else{
+      callback(new Error('请选择Logo!'))
+    }
+}
+let rules = {
+  tmName: [
+    {required: true, trigger: 'blur', validator: tmNameRule }
+  ],
+  logoUrl: [
+    {required: true, validator: isUploadRule}
+  ]
+}
+let formRef = ref()
 onMounted(() => {
   getList(currentPage.value, pageSize.value)
 })
@@ -111,8 +136,10 @@ const addRecord = () => {//新增数据
   productForm.tmName = ''
   productForm.logoUrl = ''
   productForm.id = ''
+  formRef.value?.clearValidate()//可选链操作符
 }
 const ConfirmForm = async () => {//提交
+  await formRef.value.validate()
   const res: any = await addProduct(productForm)
   if (res.code == 200 && res.ok) {
     ElMessage({
@@ -139,6 +166,7 @@ const editRecord = (data) => {//修改当前记录
   productForm.tmName = data.tmName
   productForm.logoUrl = data.logoUrl
   productForm.id = data.id
+  formRef.value?.clearValidate()//可选链操作符
 }
 const delRecord = async (id) => {//删除当前记录
   const res: any = await delProduct(id)
@@ -155,6 +183,7 @@ const delRecord = async (id) => {//删除当前记录
 const handleAvatarSuccess = (response) => {
   if (response.ok) {
     productForm.logoUrl = response.data
+    formRef.value.clearValidate('logoUrl')
     ElMessage({
       message: '上传成功!',
       type: 'success'
@@ -171,6 +200,10 @@ const beforeAvatarUpload = (rawFile) => {
   }
   return true
 }
+
+/* const blurName = ()=>{
+  console.log(123123);
+} */
 </script>
 <style scoped lang='scss'>
 .tradmark_top {
